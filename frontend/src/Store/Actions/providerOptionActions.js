@@ -23,8 +23,8 @@ export const defaultState = {
 //
 // Actions Types
 
-export const FETCH_OPTIONS = 'devices/fetchOptions';
-export const CLEAR_OPTIONS = 'devices/clearOptions';
+export const FETCH_OPTIONS = 'providers/fetchOptions';
+export const CLEAR_OPTIONS = 'providers/clearOptions';
 
 //
 // Action Creators
@@ -38,8 +38,10 @@ export const clearOptions = createAction(CLEAR_OPTIONS);
 export const actionHandlers = handleThunks({
 
   [FETCH_OPTIONS]: function(getState, payload, dispatch) {
+    const subsection = `${section}.${payload.section}`;
+
     dispatch(set({
-      section,
+      section: subsection,
       isFetching: true
     }));
 
@@ -47,7 +49,7 @@ export const actionHandlers = handleThunks({
 
     promise.done((data) => {
       dispatch(set({
-        section,
+        section: subsection,
         isFetching: false,
         isPopulated: true,
         error: null,
@@ -57,7 +59,7 @@ export const actionHandlers = handleThunks({
 
     promise.fail((xhr) => {
       dispatch(set({
-        section,
+        section: subsection,
         isFetching: false,
         isPopulated: false,
         error: xhr
@@ -71,8 +73,10 @@ export const actionHandlers = handleThunks({
 
 export const reducers = createHandleActions({
 
-  [CLEAR_OPTIONS]: function(state) {
-    return updateSectionState(state, section, defaultState);
+  [CLEAR_OPTIONS]: function(state, { payload }) {
+    const subsection = `${section}.${payload.section}`;
+
+    return updateSectionState(state, subsection, defaultState);
   }
 
-}, defaultState, section);
+}, {}, section);
